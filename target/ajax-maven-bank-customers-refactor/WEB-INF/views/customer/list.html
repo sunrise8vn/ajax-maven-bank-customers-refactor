@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Customer management</title>
+    <th:block th:replace="/layout/head :: head" />
+</head>
+<body>
+    <div class="container">
+        <div class="table-title">
+            <div class="row">
+                <div class="col-sm-5">
+                    <h1>List of customers</h1>
+                </div>
+                <div class="col-sm-7">
+                    <a class="btn btn-outline-light create-modal"><i class="fa fa-plus-square-o" aria-hidden="true"></i> <span>Add New Customer</span></a>
+                    <a href="/transfers" class="btn btn-outline-light"><i class="fa fa-history" aria-hidden="true"></i> <span>Transfer money Information</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="box-body">
+
+            <th:block th:replace="/customer/frm_list_table :: list-customers" />
+
+            <input type="hidden" id="currentRow"/>
+
+            <table id="tbListCustomers" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>FullName</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                        <th>Balance</th>
+                        <th colspan="5">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <th:block th:replace="/customer/frm_create :: frm-create" />
+
+    <th:block th:replace="/customer/frm_update :: frm-update" />
+
+    <th:block th:replace="/customer/frm_deposit :: frm-deposit" />
+
+    <th:block th:replace="/customer/frm_withdraw :: frm-withdraw" />
+
+    <th:block th:replace="/customer/frm_transfer :: frm-transfer" />
+
+    <th:block th:replace="/layout/script :: script" />
+
+    <script>
+        let page = {
+            urls: {
+                getAllCustomers: App.BASE_URL_CUSTOMER,
+                getCustomerById: App.BASE_URL_CUSTOMER + '/edit/',
+                getDeposit: App.BASE_URL_CUSTOMER + '/deposit/',
+                getWithdraw: App.BASE_URL_CUSTOMER + '/withdraw/',
+                getTransfer: App.BASE_URL_CUSTOMER + '/transfer/',
+                saveNew: App.BASE_URL_CUSTOMER,
+                saveEdit: App.BASE_URL_CUSTOMER + '/edit/',
+                doDeposit: App.BASE_URL_CUSTOMER + '/deposit/',
+                doWithdraw: App.BASE_URL_CUSTOMER + '/withdraw/',
+                doTransfer: App.BASE_URL_CUSTOMER + '/transfer/',
+                doSuspend: App.BASE_URL_CUSTOMER + '/suspend/'
+            },
+            element: {},
+            loadData: {},
+            commands: {},
+            dialogs: {
+                element: {},
+                loadData: {},
+                commands: {},
+                close: {},
+                alertDanger: {},
+                inputError: {}
+            },
+            initializeControlEvent: () => {}
+        }
+
+        // let dialogs = {
+        //     create: {
+        //         element: {},
+        //         loadData: {},
+        //         commands: {},
+        //         close: {},
+        //         alertDanger: {},
+        //         inputError: {}
+        //     }
+        // }
+
+        page.element.currentRow = $("#currentRow");
+        page.element.frmListCustomer = $("#tbListCustomers tbody");
+        page.element.btnShowCreateForm = $("a.create-modal");
+
+        page.dialogs.element.modalCreateCustomer = $("#modalCreateCustomer");
+        page.dialogs.element.modalUpdateCustomer = $("#modalUpdateCustomer");
+        page.dialogs.element.modalDeposit = $("#modalDeposit");
+        page.dialogs.element.modalWithdraw = $("#modalWithdraw");
+        page.dialogs.element.modalTransfer = $("#modalTransfer");
+
+        page.dialogs.element.frmCreateCustomer = $("#frmCreateCustomer");
+        page.dialogs.element.frmUpdateCustomer = $("#frmUpdateCustomer");
+        page.dialogs.element.frmDeposit = $("#frmDeposit");
+        page.dialogs.element.frmWithdraw = $("#frmWithdraw");
+        page.dialogs.element.frmTransfer = $("#frmTransfer");
+
+        page.dialogs.element.fullName = $("#fullName");
+        page.dialogs.element.email = $("#email");
+        page.dialogs.element.phone = $("#phone");
+        page.dialogs.element.address = $("#address");
+        page.dialogs.element.btnCreateCustomer = $("#btnCreateCustomer");
+
+        page.dialogs.element.fullNameUp = $("#fullNameUp");
+        page.dialogs.element.emailUp = $("#emailUp");
+        page.dialogs.element.phoneUp = $("#phoneUp");
+        page.dialogs.element.addressUp = $("#addressUp");
+        page.dialogs.element.btnUpdateCustomer = $("#btnUpdateCustomer");
+
+        page.dialogs.element.customerIdDep = $("#customerIdDep");
+        page.dialogs.element.fullNameDep = $("#fullNameDep");
+        page.dialogs.element.balanceDep = $("#balanceDep");
+        page.dialogs.element.transactionAmountDep = $("#transactionAmountDep");
+        page.dialogs.element.btnDepositMoney = $("#btnDepositMoney");
+
+        page.dialogs.element.customerIdWd = $("#customerIdWd");
+        page.dialogs.element.fullNameWd = $("#fullNameWd");
+        page.dialogs.element.balanceWd = $("#balanceWd");
+        page.dialogs.element.transactionAmountWd = $("#transactionAmountWd");
+        page.dialogs.element.btnWithdrawMoney = $("#btnWithdrawMoney");
+
+        page.dialogs.element.recipientIdTrf = $("#recipientIdTrf");
+        page.dialogs.element.senderIdTrf = $("#senderIdTrf");
+        page.dialogs.element.senderNameTrf = $("#senderNameTrf");
+        page.dialogs.element.emailTrf = $("#emailTrf");
+        page.dialogs.element.balanceTrf = $("#balanceTrf");
+        page.dialogs.element.transferAmountTrf = $("#transferAmountTrf");
+        page.dialogs.element.btnTransferMoney = $("#btnTransferMoney");
+
+
+        page.dialogs.element.numSpaceFrmDeposit = $("#frmDeposit .num-space");
+        page.dialogs.element.numSpaceFrmWithdraw = $("#frmWithdraw .num-space");
+        page.dialogs.element.numSpaceFrmTransfer = $("#frmTransfer .num-space");
+
+        page.dialogs.alertDanger.modalCreate = $("#modalCreateCustomer .modal-body .modal-alert-danger");
+        page.dialogs.alertDanger.modalUpdate = $("#modalUpdateCustomer .modal-body .modal-alert-danger");
+        page.dialogs.alertDanger.modalDeposit = $("#modalDeposit .modal-body .modal-alert-danger");
+        page.dialogs.alertDanger.modalWithdraw = $("#modalWithdraw .modal-body .modal-alert-danger");
+        page.dialogs.alertDanger.modalTransfer = $("#modalTransfer .modal-body .modal-alert-danger");
+
+        let customer = new Customer();
+        let deposit = new Deposit();
+        let withdraw = new Withdraw();
+        let transfer = new Transfer();
+        let sender = new Sender();
+        let recipient = new Recipient();
+        let tempCustomer = jQuery.validator.format($.trim($("#tempCustomer").val()));
+
+        let addRow = () => {
+            page.element.frmListCustomer.prepend($(tempCustomer(customer.id, customer.fullName, customer.email, customer.phone, customer.address, customer.balance)));
+        }
+
+        page.commands.formatNumber = () => {
+            // page.dialogs.element.numSpaceFrmDeposit.number(false, 0, ',', ' ');
+            // page.dialogs.element.numSpaceFrmWithdraw.number(false, 0, ',', ' ');
+            // page.dialogs.element.numSpaceFrmTransfer.number(false, 0, ',', ' ');
+
+            $('[data-toggle="tooltip"]').tooltip();
+        }
+
+        page.loadData.getAllCustomers = () => {
+            return $.ajax({
+                type: "GET",
+                url: page.urls.getAllCustomers,
+            }).done((data) => {
+                let str = ``;
+                $.each(data, (index, item) => {
+                    customer = item;
+                    customer.balance = App.formatNumberSpace(customer.balance);
+                    addRow();
+                });
+            }).fail(function() {
+                App.showErrorAlert("An error occurred. Please try again later !");
+            });
+        }
+
+        page.commands.showCreateModal = () => {
+            page.dialogs.element.modalCreateCustomer.modal('show');
+        }
+
+        page.commands.showUpdateModal = () => {
+            $.ajax({
+                type: "GET",
+                url: page.urls.getCustomerById + customer.id,
+            }).done((resp) => {
+                customer = resp;
+                // assignUpdateModal();
+                page.dialogs.element.fullNameUp.val(customer.fullName);
+                page.dialogs.element.emailUp.val(customer.email);
+                page.dialogs.element.phoneUp.val(customer.phone);
+                page.dialogs.element.addressUp.val(customer.address);
+                page.dialogs.element.modalUpdateCustomer.modal('show');
+
+            }).fail(function() {
+                App.showErrorAlert("An error occurred. Please try again later !");
+            });
+        }
+
+        page.commands.showDepositModal = () => {
+            $.ajax({
+                type: "GET",
+                url: page.urls.getDeposit + deposit.customerId,
+            }).done((resp) => {
+                deposit = resp;
+
+                deposit.balance = App.formatNumberSpace(deposit.balance);
+                page.dialogs.element.customerIdDep.val(deposit.customerId);
+                page.dialogs.element.fullNameDep.val(deposit.fullName);
+                page.dialogs.element.balanceDep.val(deposit.balance);
+
+                page.dialogs.element.modalDeposit.modal('show');
+            }).fail(function () {
+                App.showErrorAlert("An error occurred. Please try again later !");
+            });
+        }
+
+        page.commands.showWithdrawModal = () => {
+            $.ajax({
+                type: "GET",
+                url: page.urls.getWithdraw + withdraw.customerId,
+            }).done((resp) => {
+                withdraw = resp;
+
+                page.dialogs.element.customerIdWd.val(withdraw.customerId);
+                page.dialogs.element.fullNameWd.val(withdraw.fullName);
+                page.dialogs.element.balanceWd.val(withdraw.balance);
+
+                page.dialogs.element.modalWithdraw.modal('show');
+            }).fail(function() {
+                App.showErrorAlert("An error occurred. Please try again later !");
+            });
+        }
+
+        page.commands.showTransferModal = () => {
+            $.ajax({
+                type: "GET",
+                url: page.urls.getTransfer + transfer.senderId,
+            }).done((resp) => {
+                transfer = resp.transferDTO;
+
+                let recipientDTOS = [];
+                recipientDTOS = resp.recipientDTOS;
+
+                let str = ``;
+
+                $.each(recipientDTOS, (index, item) => {
+                    str += `<option value="${item.recipientId}">(${item.recipientId}) ${item.recipientName}</option>`;
+                });
+
+                page.dialogs.element.recipientIdTrf.html(str);
+
+                page.dialogs.element.senderIdTrf.val(transfer.senderId);
+                page.dialogs.element.senderNameTrf.val(transfer.senderName);
+                page.dialogs.element.emailTrf.val(transfer.email);
+                page.dialogs.element.balanceTrf.val(transfer.balance);
+
+                page.dialogs.element.modalTransfer.modal('show');
+            }).fail(function() {
+                App.showErrorAlert("An error occurred. Please try again later !");
+            });
+        }
+
+        page.commands.showSuspendedModal = () => {
+            App.showSuspendedConfirmDialog()
+                .then((result) => {
+                    if (result.isConfirmed) {
+                        page.dialogs.commands.suspendCustomer();
+                    }
+                });
+        }
+
+
+        page.dialogs.commands.createCustomer = () => {
+            customer.fullName = page.dialogs.element.fullName.val();
+            customer.email = page.dialogs.element.email.val();
+            customer.phone = page.dialogs.element.phone.val();
+            customer.address = page.dialogs.element.address.val();
+
+            $.ajax({
+                type: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                url: page.urls.saveNew,
+                data: JSON.stringify(customer)
+            }).done( (data) => {
+                customer = data;
+                addRow();
+
+                App.showSuccessAlert("Successful data generation !");
+                App.formatTooltip();
+
+                page.dialogs.element.modalCreateCustomer.modal('hide');
+
+            }).fail( (jqXHR) => {
+                page.dialogs.alertDanger.modalCreate.empty().removeClass("hide").addClass("show");
+
+                let str = ``;
+                $.each( jqXHR.responseJSON, function( key, value ) {
+                    str += `<label id="${key}-error" class="error" for="${key}">${value}</label>`;
+                    $("#" + key).addClass("error");
+                });
+
+                page.dialogs.alertDanger.modalCreate.html(str);
+            });
+        }
+
+        page.dialogs.commands.updateCustomer = () => {
+            customer.fullName = page.dialogs.element.fullNameUp.val();
+            customer.email = page.dialogs.element.emailUp.val();
+            customer.phone = page.dialogs.element.phoneUp.val();
+            customer.address = page.dialogs.element.addressUp.val();
+
+            $.ajax({
+                type: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                url: page.urls.saveEdit,
+                data: JSON.stringify(customer)
+            }).done( (resp) => {
+                customer = resp;
+                customer.balance = App.formatNumberSpace(customer.balance);
+                let current_row = page.element.frmListCustomer.find('#' + page.element.currentRow.val());
+                let updated_row = $(tempCustomer(customer.id, customer.fullName, customer.email, customer.phone, customer.address, customer.balance))
+                current_row.replaceWith (updated_row);
+
+                page.element.currentRow.val("");
+                page.dialogs.element.frmUpdateCustomer[0].reset();
+                page.dialogs.element.frmUpdateCustomer.validate().resetForm();
+
+                App.showSuccessAlert("Data update successful !");
+                App.formatTooltip();
+
+                page.dialogs.element.modalUpdateCustomer.modal('hide');
+
+            }).fail( (jqXHR) => {
+                page.dialogs.alertDanger.modalUpdate.empty().removeClass("hide").addClass("show");
+
+                let str = ``;
+
+                $.each( jqXHR.responseJSON, function( key, value ) {
+                    str += `<label id="${key}Up-error" class="error" for="${key}Up">${value}</label>`;
+                    $("#" + key + "Up").addClass("error");
+                });
+
+                page.dialogs.alertDanger.modalUpdate.html(str);
+            });
+        }
+
+        page.dialogs.commands.depositMoney = () => {
+            deposit.customerId = page.dialogs.element.customerIdDep.val();
+            deposit.transactionAmount = page.dialogs.element.transactionAmountDep.val();
+            deposit.balance = App.removeFormatNumberSpace(deposit.balance);
+
+            $.ajax({
+                type: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                url: page.urls.doDeposit,
+                data: JSON.stringify(deposit)
+            }).done( (resp) => {
+                customer = resp;
+
+                customer.balance = App.formatNumberSpace(customer.balance);
+                let current_row = page.element.frmListCustomer.find('#' + page.element.currentRow.val());
+                let updated_row = $(tempCustomer(customer.id, customer.fullName, customer.email, customer.phone, customer.address, customer.balance))
+                current_row.replaceWith (updated_row);
+
+                App.showSuccessAlert("Successful deposit transaction !");
+                App.formatTooltip();
+
+                page.dialogs.element.modalDeposit.modal('hide');
+
+            }).fail( (jqXHR) => {
+                page.dialogs.alertDanger.modalDeposit.empty().removeClass("hide").addClass("show");
+
+                let str = ``;
+
+                $.each( jqXHR.responseJSON, function( key, value ) {
+                    str += `<label id="${key}Dep-error" class="error" for="${key}Dep">${value}</label>`;
+                    $("#" + key + "Dep").addClass("error");
+                });
+
+                page.dialogs.alertDanger.modalDeposit.html(str);
+            });
+        }
+
+        page.dialogs.commands.withdrawMoney = () => {
+            withdraw.customerId = page.dialogs.element.customerIdWd.val();
+            withdraw.transactionAmount = page.dialogs.element.transactionAmountWd.val();
+            withdraw.balance = App.removeFormatNumberSpace(withdraw.balance);
+
+            $.ajax({
+                type: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                url: page.urls.doWithdraw,
+                data: JSON.stringify(withdraw)
+            }).done( (resp) => {
+                customer = resp;
+
+                customer.balance = App.formatNumberSpace(customer.balance);
+                let current_row = page.element.frmListCustomer.find('#' + page.element.currentRow.val());
+                let updated_row = $(tempCustomer(customer.id, customer.fullName, customer.email, customer.phone, customer.address, customer.balance))
+                current_row.replaceWith (updated_row);
+
+                App.showSuccessAlert("Successful withdraw transaction !");
+                App.formatTooltip();
+
+                page.dialogs.element.modalWithdraw.modal('hide');
+
+            }).fail( (jqXHR) => {
+                page.dialogs.alertDanger.modalWithdraw.empty().removeClass("hide").addClass("show");
+
+                let str = ``;
+
+                $.each( jqXHR.responseJSON, function( key, value ) {
+                    str += `<label id="${key}Wd-error" class="error" for="${key}Wd">${value}</label>`;
+                    $("#" + key + "Wd").addClass("error");
+                });
+
+                page.dialogs.alertDanger.modalWithdraw.html(str);
+            });
+        }
+
+        page.dialogs.commands.transferMoney = () => {
+            transfer.transferAmount = App.removeFormatNumberSpace(page.dialogs.element.transferAmountTrf.val());
+            transfer.recipientId = page.dialogs.element.recipientIdTrf.val();
+
+            $.ajax({
+                type: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                url: page.urls.doTransfer,
+                data: JSON.stringify(transfer)
+            }).done( (resp) => {
+                sender = resp.sender;
+                recipient = resp.recipient;
+
+                page.dialogs.element.balanceTrf.val(sender.balance);
+
+                sender.balance = App.formatNumberSpace(sender.balance);
+                let current_row_sender = page.element.frmListCustomer.find('#tr_' + sender.id);
+                let updated_row_sender = $(tempCustomer(sender.id, sender.fullName, sender.email, sender.phone, sender.address, sender.balance))
+                current_row_sender.replaceWith (updated_row_sender);
+
+                recipient.balance = App.formatNumberSpace(recipient.balance);
+                let current_row_recipient = page.element.frmListCustomer.find('#tr_' + recipient.id);
+                let updated_row_recipient = $(tempCustomer(recipient.id, recipient.fullName, recipient.email, recipient.phone, recipient.address, recipient.balance))
+                current_row_recipient.replaceWith (updated_row_recipient);
+
+                page.dialogs.element.transferAmountTrf.val("");
+
+                App.showSuccessAlert("Successful transfer transaction !");
+                App.formatTooltip();
+
+            }).fail( (jqXHR) => {
+
+                page.dialogs.alertDanger.modalTransfer.empty().removeClass("hide").addClass("show");
+
+                let str = ``;
+
+                if (jqXHR.responseJSON.message) {
+                    str += `<label id="message-error" class="error" for="message">${jqXHR.responseJSON.message}</label>`;
+                } else {
+                    $.each( jqXHR.responseJSON, function( key, value ) {
+                        str += `<label id="${key}Trf-error" class="error" for="${key}Trf">${value}</label>`;
+                        $("#" + key + "Trf").addClass("error");
+                    });
+                }
+
+                page.dialogs.alertDanger.modalTransfer.html(str);
+            });
+        }
+
+        page.dialogs.commands.suspendCustomer = () => {
+            $.ajax({
+                type: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                url: page.urls.doSuspend + customer.id
+            }).done( () => {
+                App.showSuccessAlert("Succeeded client suspension!");
+                $("#tr_" + customer.id).remove();
+            }).fail( () => {
+                App.showErrorAlert("An error occurred. Please try again later!");
+            });
+        }
+
+
+        page.dialogs.close.modalCreateCustomer = () => {
+            page.element.currentRow.val("");
+            page.dialogs.alertDanger.modalCreate.empty().removeClass("show").addClass("hide");
+            $("#frmCreateCustomer input.error").removeClass("error");
+            page.dialogs.element.frmCreateCustomer[0].reset();
+            page.dialogs.element.frmCreateCustomer.validate().resetForm();
+        }
+
+        page.dialogs.close.modalUpdateCustomer = () => {
+            page.element.currentRow.val("");
+            page.dialogs.alertDanger.modalUpdate.empty().removeClass("show").addClass("hide");
+            $("#modalUpdateCustomer input.error").removeClass("error");
+            page.dialogs.element.frmUpdateCustomer[0].reset();
+            page.dialogs.element.frmUpdateCustomer.validate().resetForm();
+        }
+
+        page.dialogs.close.modalDeposit = () => {
+            page.element.currentRow.val("");
+            page.dialogs.alertDanger.modalDeposit.empty().removeClass("show").addClass("hide");
+            $("#modalDeposit input.error").removeClass("error");
+            page.dialogs.element.frmDeposit[0].reset();
+            page.dialogs.element.frmDeposit.validate().resetForm();
+        }
+
+        page.dialogs.close.modalWithdraw = () => {
+            page.element.currentRow.val("");
+            page.dialogs.alertDanger.modalWithdraw.empty().removeClass("show").addClass("hide");
+            $("#modalWithdraw input.error").removeClass("error");
+            page.dialogs.element.frmWithdraw[0].reset();
+            page.dialogs.element.frmWithdraw.validate().resetForm();
+        }
+
+        page.dialogs.close.modalTransfer = () => {
+            page.element.currentRow.val("");
+            page.dialogs.alertDanger.modalTransfer.empty().removeClass("show").addClass("hide");
+            $("#modalTransfer input.error").removeClass("error");
+            page.dialogs.element.frmTransfer[0].reset();
+            page.dialogs.element.frmTransfer.validate().resetForm();
+        }
+
+
+        page.initializeControlEvent = () => {
+
+            page.element.btnShowCreateForm.on("click", function () {
+                delete customer.id;
+                delete customer.balance;
+                page.commands.showCreateModal();
+            });
+
+            page.element.frmListCustomer.on("click", ".edit", function () {
+                customer.id = $(this).data('id');
+                page.element.currentRow.val($(this).closest("tr").attr("id"));
+                page.commands.showUpdateModal();
+            });
+
+            page.element.frmListCustomer.on("click", ".deposit", function () {
+                deposit.customerId = $(this).data('id');
+                page.element.currentRow.val($(this).closest("tr").attr("id"));
+                page.commands.showDepositModal();
+            });
+
+            page.element.frmListCustomer.on("click", ".withdraw", function () {
+                withdraw.customerId = $(this).data('id');
+                page.element.currentRow.val($(this).closest("tr").attr("id"));
+                page.commands.showWithdrawModal();
+            });
+
+            page.element.frmListCustomer.on("click", ".transfer", function () {
+                transfer.senderId = $(this).data('id');
+                page.element.currentRow.val($(this).closest("tr").attr("id"));
+                page.commands.showTransferModal();
+            });
+
+            page.element.frmListCustomer.on("click", ".suspended", function () {
+                customer.id = $(this).data('id');
+                page.element.currentRow.val($(this).closest("tr").attr("id"));
+                page.commands.showSuspendedModal();
+            });
+
+
+            page.dialogs.element.btnCreateCustomer.on("click", function () {
+                page.dialogs.element.frmCreateCustomer.submit();
+            });
+
+            page.dialogs.element.btnUpdateCustomer.on("click", function () {
+                page.dialogs.element.frmUpdateCustomer.submit();
+            });
+
+            page.dialogs.element.btnDepositMoney.on("click", function () {
+                page.dialogs.element.frmDeposit.submit();
+            });
+
+            page.dialogs.element.btnWithdrawMoney.on("click", function () {
+                page.dialogs.element.frmWithdraw.submit();
+            });
+
+            page.dialogs.element.btnTransferMoney.on("click", function () {
+                page.dialogs.element.frmTransfer.submit();
+            });
+
+
+            page.dialogs.element.transferAmountTrf.on("change", function () {
+                let transferAmount = $(this).val();
+                let fees = 10;
+                let feeAmount = transferAmount * fees / 100;
+                let transactionAmount = parseInt(transferAmount) + feeAmount;
+                page.dialogs.element.transferAmountTrf.val(transactionAmount);
+            });
+
+
+            page.dialogs.element.modalCreateCustomer.on("hidden.bs.modal", function () {
+                page.dialogs.close.modalCreateCustomer();
+            });
+
+            page.dialogs.element.modalUpdateCustomer.on("hidden.bs.modal", function () {
+                page.dialogs.close.modalUpdateCustomer();
+            });
+
+            page.dialogs.element.modalDeposit.on("hidden.bs.modal", function () {
+                page.dialogs.close.modalDeposit();
+            });
+
+            page.dialogs.element.modalWithdraw.on("hidden.bs.modal", function () {
+                page.dialogs.close.modalWithdraw();
+            });
+
+            page.dialogs.element.modalTransfer.on("hidden.bs.modal", function () {
+                page.dialogs.close.modalTransfer();
+            });
+
+        }
+
+        $(document).ready(function () {
+            page.loadData.getAllCustomers().then(function () {
+                page.commands.formatNumber();
+                page.initializeControlEvent();
+            });
+        });
+    </script>
+
+</body>
+</html>

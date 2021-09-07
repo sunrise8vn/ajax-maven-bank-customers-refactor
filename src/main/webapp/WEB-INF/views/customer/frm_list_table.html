@@ -1,0 +1,39 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<th:block th:fragment="list-customers">
+    <textarea style="display:none" id="tempCustomer">
+        <tr id="tr_{0}">
+            <td class="text-center">{0}</td>
+            <td>{1}</td>
+            <td>{2}</td>
+            <td class="text-center">{3}</td>
+            <td>{4}</td>
+            <td class="text-end num-space">{5}</td>
+            <td class="text-center">
+                <a class="btn btn-outline-secondary edit" title="Edit" data-toggle="tooltip" data-id="{0}">
+                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                </a>
+            </td>
+            <td class="text-center">
+                <a class="btn btn-outline-success deposit" title="Deposit" data-toggle="tooltip" data-id="{0}" >
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                </a>
+            </td>
+            <td class="text-center">
+                <a class="btn btn-outline-warning withdraw" title="Withdraw" data-toggle="tooltip" data-id="{0}" >
+                    <i class="fa fa-minus" aria-hidden="true"></i>
+                </a>
+            </td>
+            <td class="text-center">
+                <a class="btn btn-outline-primary transfer" title="Transfer" data-toggle="tooltip" data-id="{0}" >
+                    <i class="fa fa-exchange" aria-hidden="true"></i>
+                </a>
+            </td>
+            <td class="text-center">
+                <a class="btn btn-outline-danger suspended" title="Suspended" data-toggle="tooltip" data-id="{0}" >
+                    <i class="fa fa-ban" aria-hidden="true"></i>
+                </a>
+            </td>
+        </tr>
+    </textarea>
+</th:block>
