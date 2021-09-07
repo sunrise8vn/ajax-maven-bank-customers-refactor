@@ -84,6 +84,7 @@
         }
 
         page.element.currentRow = $("#currentRow");
+        page.element.tempCustomer = $("#tempCustomer");
         page.element.frmListCustomer = $("#tbListCustomers tbody");
         page.element.btnShowCreateForm = $("a.create-modal");
 
@@ -129,12 +130,8 @@
         page.dialogs.element.emailTrf = $("#emailTrf");
         page.dialogs.element.balanceTrf = $("#balanceTrf");
         page.dialogs.element.transferAmountTrf = $("#transferAmountTrf");
+        page.dialogs.element.transactionAmountTrf = $("#transactionAmountTrf");
         page.dialogs.element.btnTransferMoney = $("#btnTransferMoney");
-
-
-        page.dialogs.element.numSpaceFrmDeposit = $("#frmDeposit .num-space");
-        page.dialogs.element.numSpaceFrmWithdraw = $("#frmWithdraw .num-space");
-        page.dialogs.element.numSpaceFrmTransfer = $("#frmTransfer .num-space");
 
         page.dialogs.alertDanger.modalCreate = $("#modalCreateCustomer .modal-body .modal-alert-danger");
         page.dialogs.alertDanger.modalUpdate = $("#modalUpdateCustomer .modal-body .modal-alert-danger");
@@ -148,16 +145,25 @@
         let transfer = new Transfer();
         let sender = new Sender();
         let recipient = new Recipient();
-        let tempCustomer = jQuery.validator.format($.trim($("#tempCustomer").val()));
+        let tempCustomer = jQuery.validator.format($.trim(page.element.tempCustomer.val()));
 
-        let addRow = () => {
+        page.commands.addRow = () => {
             page.element.frmListCustomer.prepend($(tempCustomer(customer.id, customer.fullName, customer.email, customer.phone, customer.address, customer.balance)));
         }
 
         page.commands.formatNumber = () => {
-            // page.dialogs.element.numSpaceFrmDeposit.number(false, 0, ',', ' ');
-            // page.dialogs.element.numSpaceFrmWithdraw.number(false, 0, ',', ' ');
-            // page.dialogs.element.numSpaceFrmTransfer.number(false, 0, ',', ' ');
+
+            $(document).on('input', '.num-space', function (e) {
+                $(this).val(App.formatNumberSpace($(this).val()));
+            });
+
+            $('input.num-space').keypress(function (e) {
+
+                let charCode = (e.which) ? e.which : e.keyCode
+
+                if (String.fromCharCode(charCode).match(/[^0-9]/g))
+                    return false;
+            });
 
             $('[data-toggle="tooltip"]').tooltip();
         }
@@ -171,10 +177,10 @@
                 $.each(data, (index, item) => {
                     customer = item;
                     customer.balance = App.formatNumberSpace(customer.balance);
-                    addRow();
+                    page.commands.addRow();
                 });
             }).fail(function() {
-                App.showErrorAlert("An error occurred. Please try again later !");
+                App.showErrorAlert(App.ERROR_404);
             });
         }
 
@@ -196,7 +202,7 @@
                 page.dialogs.element.modalUpdateCustomer.modal('show');
 
             }).fail(function() {
-                App.showErrorAlert("An error occurred. Please try again later !");
+                App.showErrorAlert(App.ERROR_404);
             });
         }
 
@@ -214,7 +220,7 @@
 
                 page.dialogs.element.modalDeposit.modal('show');
             }).fail(function () {
-                App.showErrorAlert("An error occurred. Please try again later !");
+                App.showErrorAlert(App.ERROR_404);
             });
         }
 
@@ -225,13 +231,14 @@
             }).done((resp) => {
                 withdraw = resp;
 
+                withdraw.balance = App.formatNumberSpace(withdraw.balance);
                 page.dialogs.element.customerIdWd.val(withdraw.customerId);
                 page.dialogs.element.fullNameWd.val(withdraw.fullName);
                 page.dialogs.element.balanceWd.val(withdraw.balance);
 
                 page.dialogs.element.modalWithdraw.modal('show');
             }).fail(function() {
-                App.showErrorAlert("An error occurred. Please try again later !");
+                App.showErrorAlert(App.ERROR_404);
             });
         }
 
@@ -256,11 +263,12 @@
                 page.dialogs.element.senderIdTrf.val(transfer.senderId);
                 page.dialogs.element.senderNameTrf.val(transfer.senderName);
                 page.dialogs.element.emailTrf.val(transfer.email);
+                transfer.balance = App.formatNumberSpace(transfer.balance);
                 page.dialogs.element.balanceTrf.val(transfer.balance);
 
                 page.dialogs.element.modalTransfer.modal('show');
             }).fail(function() {
-                App.showErrorAlert("An error occurred. Please try again later !");
+                App.showErrorAlert(App.ERROR_404);
             });
         }
 
@@ -290,9 +298,10 @@
                 data: JSON.stringify(customer)
             }).done( (data) => {
                 customer = data;
-                addRow();
 
-                App.showSuccessAlert("Successful data generation !");
+                page.commands.addRow();
+
+                App.showSuccessAlert(App.SUCCESS_CREATED);
                 App.formatTooltip();
 
                 page.dialogs.element.modalCreateCustomer.modal('hide');
@@ -335,7 +344,7 @@
                 page.dialogs.element.frmUpdateCustomer[0].reset();
                 page.dialogs.element.frmUpdateCustomer.validate().resetForm();
 
-                App.showSuccessAlert("Data update successful !");
+                App.showSuccessAlert(App.SUCCESS_UPDATED);
                 App.formatTooltip();
 
                 page.dialogs.element.modalUpdateCustomer.modal('hide');
@@ -358,6 +367,7 @@
             deposit.customerId = page.dialogs.element.customerIdDep.val();
             deposit.transactionAmount = page.dialogs.element.transactionAmountDep.val();
             deposit.balance = App.removeFormatNumberSpace(deposit.balance);
+            deposit.transactionAmount = App.removeFormatNumberSpace(deposit.transactionAmount);
 
             $.ajax({
                 type: "POST",
@@ -375,7 +385,7 @@
                 let updated_row = $(tempCustomer(customer.id, customer.fullName, customer.email, customer.phone, customer.address, customer.balance))
                 current_row.replaceWith (updated_row);
 
-                App.showSuccessAlert("Successful deposit transaction !");
+                App.showSuccessAlert(App.SUCCESS_DEPOSIT);
                 App.formatTooltip();
 
                 page.dialogs.element.modalDeposit.modal('hide');
@@ -385,10 +395,18 @@
 
                 let str = ``;
 
-                $.each( jqXHR.responseJSON, function( key, value ) {
-                    str += `<label id="${key}Dep-error" class="error" for="${key}Dep">${value}</label>`;
-                    $("#" + key + "Dep").addClass("error");
-                });
+                if (jqXHR.responseJSON) {
+                    if (jqXHR.responseJSON.message) {
+                        str += `<label id="message-error" class="error" for="message">${jqXHR.responseJSON.message}</label>`;
+                    } else {
+                        $.each( jqXHR.responseJSON, function( key, value ) {
+                            str += `<label id="${key}Dep-error" class="error" for="${key}Dep">${value}</label>`;
+                            $("#" + key + "Dep").addClass("error");
+                        });
+                    }
+                } else {
+                    str += `<label id="message-error" class="error" for="message">${App.ERROR_400}</label>`;
+                }
 
                 page.dialogs.alertDanger.modalDeposit.html(str);
             });
@@ -396,8 +414,8 @@
 
         page.dialogs.commands.withdrawMoney = () => {
             withdraw.customerId = page.dialogs.element.customerIdWd.val();
-            withdraw.transactionAmount = page.dialogs.element.transactionAmountWd.val();
             withdraw.balance = App.removeFormatNumberSpace(withdraw.balance);
+            withdraw.transactionAmount = App.removeFormatNumberSpace(page.dialogs.element.transactionAmountWd.val());
 
             $.ajax({
                 type: "POST",
@@ -415,7 +433,7 @@
                 let updated_row = $(tempCustomer(customer.id, customer.fullName, customer.email, customer.phone, customer.address, customer.balance))
                 current_row.replaceWith (updated_row);
 
-                App.showSuccessAlert("Successful withdraw transaction !");
+                App.showSuccessAlert(App.SUCCESS_WITHDRAW);
                 App.formatTooltip();
 
                 page.dialogs.element.modalWithdraw.modal('hide');
@@ -425,16 +443,25 @@
 
                 let str = ``;
 
-                $.each( jqXHR.responseJSON, function( key, value ) {
-                    str += `<label id="${key}Wd-error" class="error" for="${key}Wd">${value}</label>`;
-                    $("#" + key + "Wd").addClass("error");
-                });
+                if (jqXHR.responseJSON) {
+                    if (jqXHR.responseJSON.message) {
+                        str += `<label id="message-error" class="error" for="message">${jqXHR.responseJSON.message}</label>`;
+                    } else {
+                        $.each( jqXHR.responseJSON, function( key, value ) {
+                            str += `<label id="${key}Wd-error" class="error" for="${key}Wd">${value}</label>`;
+                            $("#" + key + "Wd").addClass("error");
+                        });
+                    }
+                } else {
+                    str += `<label id="message-error" class="error" for="message">${App.ERROR_400}</label>`;
+                }
 
                 page.dialogs.alertDanger.modalWithdraw.html(str);
             });
         }
 
         page.dialogs.commands.transferMoney = () => {
+            transfer.balance = App.removeFormatNumberSpace(transfer.balance);
             transfer.transferAmount = App.removeFormatNumberSpace(page.dialogs.element.transferAmountTrf.val());
             transfer.recipientId = page.dialogs.element.recipientIdTrf.val();
 
@@ -450,7 +477,8 @@
                 sender = resp.sender;
                 recipient = resp.recipient;
 
-                page.dialogs.element.balanceTrf.val(sender.balance);
+                page.dialogs.element.balanceTrf.val(App.formatNumberSpace(sender.balance));
+                page.dialogs.element.transactionAmountTrf.val("");
 
                 sender.balance = App.formatNumberSpace(sender.balance);
                 let current_row_sender = page.element.frmListCustomer.find('#tr_' + sender.id);
@@ -464,7 +492,7 @@
 
                 page.dialogs.element.transferAmountTrf.val("");
 
-                App.showSuccessAlert("Successful transfer transaction !");
+                App.showSuccessAlert(App.SUCCESS_TRANSFER);
                 App.formatTooltip();
 
             }).fail( (jqXHR) => {
@@ -473,13 +501,17 @@
 
                 let str = ``;
 
-                if (jqXHR.responseJSON.message) {
-                    str += `<label id="message-error" class="error" for="message">${jqXHR.responseJSON.message}</label>`;
+                if (jqXHR.responseJSON) {
+                    if (jqXHR.responseJSON.message) {
+                        str += `<label id="message-error" class="error" for="message">${jqXHR.responseJSON.message}</label>`;
+                    } else {
+                        $.each( jqXHR.responseJSON, function( key, value ) {
+                            str += `<label id="${key}Trf-error" class="error" for="${key}Trf">${value}</label>`;
+                            $("#" + key + "Trf").addClass("error");
+                        });
+                    }
                 } else {
-                    $.each( jqXHR.responseJSON, function( key, value ) {
-                        str += `<label id="${key}Trf-error" class="error" for="${key}Trf">${value}</label>`;
-                        $("#" + key + "Trf").addClass("error");
-                    });
+                    str += `<label id="message-error" class="error" for="message">${App.ERROR_400}</label>`;
                 }
 
                 page.dialogs.alertDanger.modalTransfer.html(str);
@@ -495,10 +527,10 @@
                 },
                 url: page.urls.doSuspend + customer.id
             }).done( () => {
-                App.showSuccessAlert("Succeeded client suspension!");
+                App.showSuccessAlert(App.SUCCESS_SUSPEND);
                 $("#tr_" + customer.id).remove();
             }).fail( () => {
-                App.showErrorAlert("An error occurred. Please try again later!");
+                App.showErrorAlert(App.ERROR_404);
             });
         }
 
@@ -605,11 +637,11 @@
 
 
             page.dialogs.element.transferAmountTrf.on("change", function () {
-                let transferAmount = $(this).val();
+                let transferAmount = App.removeFormatNumberSpace($(this).val());
                 let fees = 10;
                 let feeAmount = transferAmount * fees / 100;
                 let transactionAmount = parseInt(transferAmount) + feeAmount;
-                page.dialogs.element.transferAmountTrf.val(transactionAmount);
+                page.dialogs.element.transactionAmountTrf.val(App.formatNumberSpace(transactionAmount));
             });
 
 
@@ -638,8 +670,9 @@
         $(document).ready(function () {
             page.loadData.getAllCustomers().then(function () {
                 page.commands.formatNumber();
-                page.initializeControlEvent();
             });
+
+            page.initializeControlEvent();
         });
     </script>
 

@@ -30,30 +30,28 @@ public class Transfer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne
     @ManyToOne(targetEntity = Customer.class, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "sender_id")
     @JsonIgnore
     private Customer sender;
 
-//    @ManyToOne
     @ManyToOne(targetEntity = Customer.class, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "recipient_id")
     @JsonIgnore
     private Customer recipient;
 
-    @Digits(integer = 9, fraction = 0)
+    @Digits(integer = 12, fraction = 0)
     @Column(name = "transfer_amount", nullable= false)
     private BigDecimal transferAmount;
 
     @Column(nullable= false)
     private int fees;
 
-    @Digits(integer = 9, fraction = 0)
+    @Digits(integer = 12, fraction = 0)
     @Column(name = "fees_amount", nullable= false)
     private BigDecimal feesAmount;
 
-    @Digits(integer = 9, fraction = 0)
+    @Digits(integer = 12, fraction = 0)
     @Column(name = "transaction_amount", nullable= false)
     private BigDecimal transactionAmount;
 

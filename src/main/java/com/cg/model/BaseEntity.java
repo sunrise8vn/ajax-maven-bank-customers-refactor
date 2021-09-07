@@ -1,5 +1,6 @@
 package com.cg.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,7 +22,7 @@ public abstract class BaseEntity {
     private boolean deleted;
 
     @CreationTimestamp
-//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss Z", timezone = "Asia/Ho_Chi_Minh")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss Z", timezone = "Asia/Ho_Chi_Minh")
     @Column(name = "created_at", updatable = false)
     private Date createdAt = new Date();
 
@@ -30,7 +31,7 @@ public abstract class BaseEntity {
     private Long createdBy;
 
     @UpdateTimestamp
-//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss Z", timezone = "Asia/Ho_Chi_Minh")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss Z", timezone = "Asia/Ho_Chi_Minh")
     @Column(name = "updated_at")
     private Date updatedAt;
 

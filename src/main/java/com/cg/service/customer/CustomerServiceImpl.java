@@ -61,6 +61,11 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     @Override
+    public Optional<Customer> findByEmail(String email) {
+        return customerRepository.findByEmail(email);
+    }
+
+    @Override
     public Optional<Customer> findByEmailAndIdIsNot(String email, Long id) {
         return customerRepository.findByEmailAndIdIsNot(email, id);
     }

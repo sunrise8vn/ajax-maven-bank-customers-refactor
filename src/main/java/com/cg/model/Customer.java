@@ -31,7 +31,6 @@ public class Customer {
     private static final long serialVersionUID = 1L;
 
     @Id
-//    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -43,7 +42,7 @@ public class Customer {
     private String phone;
     private String address;
 
-    @Digits(integer = 9, fraction = 0)
+    @Digits(integer = 12, fraction = 0)
     @Column(updatable = false)
     private BigDecimal balance;
 
@@ -67,31 +66,19 @@ public class Customer {
     private Long updatedBy;
 
 
-//    @OneToMany(mappedBy = "customer")
     @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
-//    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @Fetch(value = FetchMode.SELECT)
     @JsonIgnore
     private Set<Deposit> deposits;
 
-//    @OneToMany(mappedBy = "customer")
     @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
-//    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @Fetch(value = FetchMode.SELECT)
     @JsonIgnore
     private Set<Withdraw> withdraws;
 
-//    @OneToMany(mappedBy = "sender")
     @OneToMany(mappedBy = "sender", fetch = FetchType.EAGER)
-//    @OneToMany(mappedBy = "sender", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @Fetch(value = FetchMode.SELECT)
     @JsonIgnore
     private Set<Transfer> sender;
 
-//    @OneToMany(mappedBy = "recipient")
     @OneToMany(mappedBy = "recipient", fetch = FetchType.EAGER)
-//    @OneToMany(mappedBy = "recipient", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @Fetch(value = FetchMode.SELECT)
     @JsonIgnore
     private Set<Transfer> recipient;
 

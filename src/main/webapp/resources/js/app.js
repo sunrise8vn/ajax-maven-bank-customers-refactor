@@ -1,10 +1,18 @@
 class App {
 
-    // static BASE_URL_CUSTOMER = "https://ajax-maven-bank-customers.herokuapp.com/api/customers";
-    // static BASE_URL_TRANSFER = "https://ajax-maven-bank-customers.herokuapp.com/api/transfers";
+    static DOMAIN = location.origin;
 
-    static BASE_URL_CUSTOMER = "http://localhost:8089/api/customers";
-    static BASE_URL_TRANSFER = "http://localhost:8089/api/transfers";
+    static BASE_URL_CUSTOMER = this.DOMAIN + "/api/customers";
+    static BASE_URL_TRANSFER = this.DOMAIN + "/api/transfers";
+
+    static ERROR_400 = "Giao dịch không thành công, vui lòng kiểm tra lại dữ liệu";
+    static ERROR_404 = "An error occurred. Please try again later!";
+    static SUCCESS_CREATED = "Successful data generation !";
+    static SUCCESS_UPDATED = "Data update successful !";
+    static SUCCESS_DEPOSIT = "Successful deposit transaction !";
+    static SUCCESS_WITHDRAW = "Successful withdraw transaction !";
+    static SUCCESS_TRANSFER = "Successful transfer transaction !";
+    static SUCCESS_SUSPEND = "Succeeded client suspension !";
 
     static showSuspendedConfirmDialog() {
         return Swal.fire({
@@ -43,11 +51,11 @@ class App {
     }
 
     static formatNumberSpace(x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        return x.toString().replace(/ /g, "").replace(/\B(?=(\d{3})+(?!\d))/g, " ");
     }
 
     static removeFormatNumberSpace(x) {
-        return x.toString().replace(" ", "");
+        return x.toString().replace(/ /g, "")
     }
 
     static formatTooltip() {
@@ -107,11 +115,12 @@ class Withdraw {
 }
 
 class Transfer {
-    constructor(senderId, senderName, email, recipientId, balance, transferAmount, fees, feesAmount, transactionAmount) {
+    constructor(senderId, senderName, email, recipientId, recipientName, balance, transferAmount, fees, feesAmount, transactionAmount) {
         this.senderId = senderId;
         this.senderName = senderName;
         this.email = email;
         this.recipientId = recipientId;
+        this.recipientName = recipientName;
         this.balance = balance;
         this.transferAmount = transferAmount;
         this.fees = fees;

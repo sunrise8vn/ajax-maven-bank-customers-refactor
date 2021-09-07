@@ -121,13 +121,19 @@ public class CustomerAPI {
         if (bindingResult.hasErrors())
             return appUtils.mapErrorToResponse(bindingResult);
 
+        Optional<Customer> optCustomer = customerService.findByEmail(customerDTO.getEmail());
+
+        if (optCustomer.isPresent()) {
+            throw new EmailExistsException("Email already exists");
+        }
+
         customerDTO.setBalance(BigDecimal.valueOf(0));
 
         try {
             return new ResponseEntity<>(customerService.save(customerDTO.toCustomer()), HttpStatus.CREATED);
-            //        return new BaseResponse<Customer>().getValidResponse(201, "Successfully Created Customer", customerService.save(customerDTO.toCustomer()));
+//                return new BaseResponse<Customer>().getValidResponse(201, "Successfully Created Customer", customerService.save(customerDTO.toCustomer()));
         } catch (DataIntegrityViolationException e) {
-            throw new EmailExistsException("Email already exists");
+            throw new DataInputException("Invalid customer creation information");
         }
     }
 
@@ -139,11 +145,16 @@ public class CustomerAPI {
         Optional<Customer> optCustomer = customerService.findByEmailAndIdIsNot(customerDTO.getEmail(), customerDTO.getId());
 
         if (optCustomer.isPresent()) {
-//            return new BaseResponse<Customer>().getErrorResponse(400, "Email already exists");
             throw new EmailExistsException("Email already exists");
         }
 
-        return new ResponseEntity<>(customerService.save(customerDTO.toCustomer()).toCustomerDTO(), HttpStatus.CREATED);
+        try {
+            return new ResponseEntity<>(customerService.save(customerDTO.toCustomer()).toCustomerDTO(), HttpStatus.CREATED);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataInputException("Invalid customer update information");
+        }
+
+
     }
 
     @PostMapping("/deposit")

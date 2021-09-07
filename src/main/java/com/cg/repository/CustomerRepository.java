@@ -24,6 +24,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Iterable<CustomerDTO> findAllCustomerDTO();
 
 
+    Optional<Customer> findByEmail(String email);
+
     Optional<Customer> findByEmailAndIdIsNot(String email, Long id);
 
 

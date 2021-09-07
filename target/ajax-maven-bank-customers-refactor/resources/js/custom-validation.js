@@ -113,8 +113,7 @@ $(document).ready(function () {
         rules: {
             transactionAmountDep: {
                 required: true,
-                maxlength: 10,
-                number: true
+                maxlength: 14
             }
         },
         errorLabelContainer: "#modalDeposit .modal-alert-danger",
@@ -133,8 +132,7 @@ $(document).ready(function () {
         messages: {
             transactionAmountDep: {
                 required: "Không được để trống trường này",
-                maxlength: "Số tiền tối đa là 10.000.000",
-                number: "Vui lòng chỉ nhập số"
+                maxlength: "Số tiền tối đa là 10.000.000.000"
             }
         },
         submitHandler: function() {
@@ -150,8 +148,7 @@ $(document).ready(function () {
         rules: {
             transactionAmountWd: {
                 required: true,
-                maxlength: 10,
-                number: true
+                maxlength: 14
             }
         },
         errorLabelContainer: "#modalWithdraw .modal-alert-danger",
@@ -170,8 +167,7 @@ $(document).ready(function () {
         messages: {
             transactionAmountWd: {
                 required: "Không được để trống trường này",
-                maxlength: "Số tiền tối đa là 10.000.000",
-                number: "Vui lòng chỉ nhập số"
+                maxlength: "Số tiền tối đa là 10.000.000.000"
             }
         },
         submitHandler: function() {
@@ -186,8 +182,8 @@ $(document).ready(function () {
         rules: {
             transferAmountTrf: {
                 required: true,
-                maxlength: 10,
-                number: true
+                maxlength: 14,
+                // number: true
             }
         },
         errorLabelContainer: "#modalTransfer .modal-alert-danger",
@@ -206,8 +202,7 @@ $(document).ready(function () {
         messages: {
             transferAmountTrf: {
                 required: "Không được để trống trường này",
-                maxlength: "Số tiền tối đa là 10.000.000",
-                number: "Vui lòng chỉ nhập số"
+                maxlength: "Số tiền tối đa là 10.000.000.000"
             }
         },
         submitHandler: function() {

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title>Transfer money Information</title>
-    <th:block th:replace="/layout/head :: head"></th:block>
+    <th:block th:replace="/layout/head :: head" />
 </head>
 <body>
     <div class="container">
@@ -17,7 +17,7 @@
             </div>
         </div>
         <div class="box-body">
-            <textarea style="display:none" id="tempListTransfers">
+            <textarea style="display:none" id="tempTransfer">
                 <tr>
                     <td class="text-center">{0}</td>
                     <td class="text-center">{1}</td>
@@ -64,47 +64,55 @@
             urls: {
                 getAllTransfers: App.BASE_URL_TRANSFER,
                 getSumFeesAmount: App.BASE_URL_TRANSFER + "/sum-fees-amount"
-            }
+            },
+            element: {},
+            loadData: {},
+            commands: {}
         }
+
+        page.element.tempTransfer = $("#tempTransfer");
+        page.element.frmListTransfer = $("#tbListTransfers tbody");
+        page.element.spSumFeesAmount = $("#spSumFeesAmount");
 
         let transfer = new Transfer();
-        let tempListTransfers = jQuery.validator.format($.trim($("#tempListTransfers").val()));
+        let tempTransfer = jQuery.validator.format($.trim(page.element.tempTransfer.val()));
 
-        let addRow = (index) => {
-            $("#tbListTransfers tbody").prepend($(tempListTransfers(index, transfer.senderId, transfer.senderName, transfer.recipientId, transfer.recipientName, transfer.transferAmount, transfer.fees, transfer.feesAmount)));
+        page.commands.addRow = (index) => {
+            page.element.frmListTransfer.prepend($(tempTransfer(index, transfer.senderId, transfer.senderName, transfer.recipientId, transfer.recipientName, transfer.transferAmount, transfer.fees, transfer.feesAmount)));
         }
 
-        function getAllTransfers() {
+        page.loadData.getAllTransfers = () => {
             $.ajax({
                 type: "GET",
                 url: page.urls.getAllTransfers,
             }).done((data) => {
+
                 $.each(data, (index, item) => {
                     transfer = item;
-                    addRow(index + 1);
+                    page.commands.addRow(index + 1);
                 });
 
                 $(".num-comma").number(true, 0, ',', ',');
 
             }).fail(function() {
-                App.showErrorAlert("An error occurred. Please try again later !");
+                App.showErrorAlert(App.ERROR_404);
             });
         }
 
-        function getSumFeesAmount() {
+        page.loadData.getSumFeesAmount = () => {
             $.ajax({
                 type: "GET",
                 url: page.urls.getSumFeesAmount,
             }).done((data) => {
-                $("#spSumFeesAmount").text(App.formatNumberSpace(data.amount))
+                page.element.spSumFeesAmount.text(App.formatNumberSpace(data.amount))
             }).fail(function() {
-                App.showErrorAlert("An error occurred. Please try again later !");
+                App.showErrorAlert(App.ERROR_404);
             });
         }
 
         $(document).ready(function () {
-            getAllTransfers();
-            getSumFeesAmount();
+            page.loadData.getAllTransfers();
+            page.loadData.getSumFeesAmount();
         });
     </script>
 

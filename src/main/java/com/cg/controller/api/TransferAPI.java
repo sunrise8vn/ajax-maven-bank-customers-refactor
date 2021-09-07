@@ -21,14 +21,14 @@ public class TransferAPI {
     private ITransferService transferService;
 
     @GetMapping
-    public ResponseEntity<Iterable<ITransferDTO>> findAll() {
+    public ResponseEntity<?> findAll() {
         try {
             Iterable<ITransferDTO> iTransferDTOS = transferService.findAllByITransferDTO();
-//            Optional<SumFeesAmountDTO> sumFeesAmount = transferService.sumFeesAmount();
 
             if (((List) iTransferDTOS).isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
+
             return new ResponseEntity<>(iTransferDTOS, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

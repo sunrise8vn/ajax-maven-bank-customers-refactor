@@ -13,6 +13,8 @@ public interface ICustomerService extends IGeneralService<Customer> {
 
     Boolean existsByEmail(String email);
 
+    Optional<Customer> findByEmail(String email);
+
     Optional<Customer> findByEmailAndIdIsNot(String email, Long id);
 
     Iterable<Customer> findAllByDeletedIsFalse();
