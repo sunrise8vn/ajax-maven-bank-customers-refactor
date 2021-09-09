@@ -182,8 +182,7 @@ $(document).ready(function () {
         rules: {
             transferAmountTrf: {
                 required: true,
-                maxlength: 14,
-                // number: true
+                maxlength: 14
             }
         },
         errorLabelContainer: "#modalTransfer .modal-alert-danger",

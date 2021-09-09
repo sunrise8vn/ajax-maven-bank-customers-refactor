@@ -18,15 +18,14 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 
-//@EqualsAndHashCode(callSuper = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "customers")
 @Accessors(chain = true)
-public class Customer {
+public class Customer extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -45,25 +44,6 @@ public class Customer {
     @Digits(integer = 12, fraction = 0)
     @Column(updatable = false)
     private BigDecimal balance;
-
-    @Column(columnDefinition = "boolean default false")
-    private boolean deleted;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private Date createdAt = new Date();
-
-    @CreatedBy
-    @Column(name = "created_by")
-    private Long createdBy;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private Date updatedAt;
-
-    @LastModifiedBy
-    @Column(name = "updated_by")
-    private Long updatedBy;
 
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)

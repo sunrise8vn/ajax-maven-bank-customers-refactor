@@ -33,4 +33,5 @@ public interface TransferRepository extends JpaRepository<Transfer, Long> {
 
     @Query("SELECT NEW com.cg.model.dto.SumFeesAmountDTO (SUM(t.feesAmount)) FROM Transfer t ")
     Optional<SumFeesAmountDTO> sumFeesAmount();
+
 }

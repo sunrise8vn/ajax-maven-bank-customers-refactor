@@ -57,7 +57,7 @@ public class TransferDTO implements Validator {
         BigDecimal transferAmount = transferDTO.getTransferAmount();
 
         if (transferAmount != null) {
-            if (transferAmount.toString().length() > 9){
+            if (transferAmount.toString().length() > 12){
                 errors.rejectValue("transferAmount", "transferAmount.length");
             }
 

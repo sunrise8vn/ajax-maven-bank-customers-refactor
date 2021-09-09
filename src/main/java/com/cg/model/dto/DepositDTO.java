@@ -49,7 +49,7 @@ public class DepositDTO implements Validator {
 //        ValidationUtils.rejectIfEmpty(errors, "transactionAmount", "transactionAmount.empty");
 
         if (transactionAmount != null) {
-            if (transactionAmount.toString().length() > 9){
+            if (transactionAmount.toString().length() > 12){
                 errors.rejectValue("transactionAmount", "transactionAmount.length");
             }
 

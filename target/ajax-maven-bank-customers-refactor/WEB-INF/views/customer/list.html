@@ -194,7 +194,7 @@
                 url: page.urls.getCustomerById + customer.id,
             }).done((resp) => {
                 customer = resp;
-                // assignUpdateModal();
+
                 page.dialogs.element.fullNameUp.val(customer.fullName);
                 page.dialogs.element.emailUp.val(customer.email);
                 page.dialogs.element.phoneUp.val(customer.phone);

@@ -153,8 +153,6 @@ public class CustomerAPI {
         } catch (DataIntegrityViolationException e) {
             throw new DataInputException("Invalid customer update information");
         }
-
-
     }
 
     @PostMapping("/deposit")

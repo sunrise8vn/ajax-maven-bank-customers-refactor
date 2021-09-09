@@ -24,7 +24,7 @@ public abstract class BaseEntity {
     @CreationTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss Z", timezone = "Asia/Ho_Chi_Minh")
     @Column(name = "created_at", updatable = false)
-    private Date createdAt = new Date();
+    private Date createdAt;
 
     @CreatedBy
     @Column(name = "created_by")

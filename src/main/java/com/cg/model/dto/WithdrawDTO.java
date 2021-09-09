@@ -45,7 +45,7 @@ public class WithdrawDTO implements Validator {
         BigDecimal transactionAmount = withdrawDTO.getTransactionAmount();
 
         if (transactionAmount != null) {
-            if (transactionAmount.toString().length() > 9){
+            if (transactionAmount.toString().length() > 12){
                 errors.rejectValue("transactionAmount", "transactionAmount.length");
             }
 
