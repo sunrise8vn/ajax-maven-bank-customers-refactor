@@ -4,4 +4,4 @@
 $("form").validate().settings.ignore = "*";
 
 
-![customer list view](list.jpg)
+![customer list view](list.png)
