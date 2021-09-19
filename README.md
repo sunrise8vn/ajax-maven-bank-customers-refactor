@@ -2,3 +2,6 @@
 
 ## jQuery Validation plugin: Disable validation
 $("form").validate().settings.ignore = "*";
+
+
+![customer list view](list.png)
