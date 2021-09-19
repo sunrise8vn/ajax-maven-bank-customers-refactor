@@ -6,7 +6,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="table-title">
+        <header>
             <div class="row">
                 <div class="col-sm-5">
                     <h1>List of customers</h1>
@@ -16,7 +16,7 @@
                     <a href="/transfers" class="btn btn-outline-light"><i class="fa fa-history" aria-hidden="true"></i> <span>Transfer money Information</span></a>
                 </div>
             </div>
-        </div>
+        </header>
         <div class="box-body">
 
             <th:block th:replace="/customer/frm_list_table :: list-customers" />
@@ -336,6 +336,7 @@
             }).done( (resp) => {
                 customer = resp;
                 customer.balance = App.formatNumberSpace(customer.balance);
+
                 let current_row = page.element.frmListCustomer.find('#' + page.element.currentRow.val());
                 let updated_row = $(tempCustomer(customer.id, customer.fullName, customer.email, customer.phone, customer.address, customer.balance))
                 current_row.replaceWith (updated_row);
@@ -427,8 +428,8 @@
                 data: JSON.stringify(withdraw)
             }).done( (resp) => {
                 customer = resp;
-
                 customer.balance = App.formatNumberSpace(customer.balance);
+
                 let current_row = page.element.frmListCustomer.find('#' + page.element.currentRow.val());
                 let updated_row = $(tempCustomer(customer.id, customer.fullName, customer.email, customer.phone, customer.address, customer.balance))
                 current_row.replaceWith (updated_row);

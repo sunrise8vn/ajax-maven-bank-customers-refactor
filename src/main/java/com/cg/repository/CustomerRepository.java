@@ -30,7 +30,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
 
     @Query("SELECT NEW com.cg.model.dto.CustomerDTO (c.id, c.fullName, c.email, c.phone, c.address, c.balance) FROM Customer c WHERE c.id = ?1 ")
-    Optional<CustomerDTO> findByIdWithCustomerDTO(Long id);
+    CustomerDTO findByIdWithCustomerDTO(Long id);
 
 
     @Query("SELECT NEW com.cg.model.dto.DepositDTO (c.id, c.fullName, c.balance) FROM Customer c WHERE c.id = ?1 ")

@@ -1,6 +1,5 @@
 package com.cg.model.dto;
 
-import com.cg.model.Customer;
 import com.cg.model.Deposit;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +11,7 @@ import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.Optional;
+
 
 @Data
 @NoArgsConstructor
@@ -61,9 +60,9 @@ public class DepositDTO implements Validator {
         }
     }
 
-    public Deposit toDeposit(Optional<Customer> customer) {
+    public Deposit toDeposit(CustomerDTO customerDTO) {
         return new Deposit()
-            .setCustomer(customer.get())
+            .setCustomer(customerDTO.toCustomer())
             .setTransactionAmount(transactionAmount);
     }
 

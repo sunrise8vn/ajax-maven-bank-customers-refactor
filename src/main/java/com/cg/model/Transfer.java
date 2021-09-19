@@ -1,10 +1,6 @@
 package com.cg.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
@@ -12,29 +8,25 @@ import javax.validation.constraints.Digits;
 import java.math.BigDecimal;
 
 
-@EqualsAndHashCode(callSuper = true)
-@Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @Table(name = "transfers")
 @Accessors(chain = true)
 public class Transfer extends BaseEntity {
-
-    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(targetEntity = Customer.class, cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "sender_id")
-    @JsonIgnore
     private Customer sender;
 
-    @ManyToOne(targetEntity = Customer.class, cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "recipient_id")
-    @JsonIgnore
     private Customer recipient;
 
     @Digits(integer = 12, fraction = 0)

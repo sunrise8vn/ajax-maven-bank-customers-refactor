@@ -46,7 +46,7 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     @Override
-    public Optional<CustomerDTO> findByIdWithCustomerDTO(Long id) {
+    public CustomerDTO findByIdWithCustomerDTO(Long id) {
         return customerRepository.findByIdWithCustomerDTO(id);
     }
 
@@ -101,21 +101,25 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     @Override
-    public void doDeposit(DepositDTO depositDTO) {
-        Optional<Customer> customer = customerRepository.findById(depositDTO.getCustomerId());
-
+    public CustomerDTO doDeposit(DepositDTO depositDTO) {
         customerRepository.incrementBalance(depositDTO.getTransactionAmount(), depositDTO.getCustomerId());
 
-        depositRepository.save(depositDTO.toDeposit(customer));
+        CustomerDTO customerDTO = customerRepository.findByIdWithCustomerDTO(depositDTO.getCustomerId());
+
+        depositRepository.save(depositDTO.toDeposit(customerDTO));
+
+        return customerDTO;
     }
 
     @Override
-    public void doWithdraw(WithdrawDTO withdrawDTO) {
-        Optional<Customer> customer = customerRepository.findById(withdrawDTO.getCustomerId());
-
+    public CustomerDTO doWithdraw(WithdrawDTO withdrawDTO) {
         customerRepository.reduceBalance(withdrawDTO.getTransactionAmount(), withdrawDTO.getCustomerId());
 
-        withdrawRepository.save(withdrawDTO.toWithdraw(customer));
+        CustomerDTO customerDTO = customerRepository.findByIdWithCustomerDTO(withdrawDTO.getCustomerId());
+
+        withdrawRepository.save(withdrawDTO.toWithdraw(customerDTO));
+
+        return customerDTO;
     }
 
     @Override

@@ -1,35 +1,28 @@
 package com.cg.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.validation.constraints.Digits;
 import java.math.BigDecimal;
-import java.util.Date;
 
-@EqualsAndHashCode(callSuper = true)
-@Entity
-@Data
+
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @Table(name = "withdraws")
 @Accessors(chain = true)
 public class Withdraw extends BaseEntity {
-
-    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(targetEntity = Customer.class, cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "customer_id")
-    @JsonIgnore
     private Customer customer;
 
 
@@ -42,7 +35,6 @@ public class Withdraw extends BaseEntity {
     public String toString() {
         return "Withdraw{" +
                 "id=" + id +
-                ", customer=" + customer +
                 ", transactionAmount=" + transactionAmount +
                 '}';
     }

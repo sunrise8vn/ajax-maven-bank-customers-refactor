@@ -1,6 +1,5 @@
 package com.cg.model.dto;
 
-import com.cg.model.Customer;
 import com.cg.model.Withdraw;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +11,7 @@ import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.Optional;
+
 
 @Data
 @NoArgsConstructor
@@ -57,9 +56,9 @@ public class WithdrawDTO implements Validator {
         }
     }
 
-    public Withdraw toWithdraw(Optional<Customer> customer) {
+    public Withdraw toWithdraw(CustomerDTO customer) {
         return new Withdraw()
-            .setCustomer(customer.get())
+            .setCustomer(customer.toCustomer())
             .setTransactionAmount(transactionAmount);
     }
 }

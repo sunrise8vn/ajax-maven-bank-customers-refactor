@@ -19,7 +19,7 @@ public interface ICustomerService extends IGeneralService<Customer> {
 
     Iterable<Customer> findAllByDeletedIsFalse();
 
-    Optional<CustomerDTO> findByIdWithCustomerDTO(Long id);
+    CustomerDTO findByIdWithCustomerDTO(Long id);
 
     Optional<DepositDTO> findByIdWithDepositDTO(Long id);
 
@@ -29,9 +29,9 @@ public interface ICustomerService extends IGeneralService<Customer> {
 
     Iterable<RecipientDTO> findAllRecipientDTOByIdWithOutSenderAndDeletedIsFalse(Long id);
 
-    void doDeposit(DepositDTO depositDTO);
+    CustomerDTO doDeposit(DepositDTO depositDTO);
 
-    void doWithdraw(WithdrawDTO withdrawDTO);
+    CustomerDTO doWithdraw(WithdrawDTO withdrawDTO);
 
     void doTransfer(TransferDTO transferDTO, Optional<Customer> sender, Optional<Customer> recipient) ;
 

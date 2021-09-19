@@ -127,10 +127,13 @@ public class CustomerAPI {
             throw new EmailExistsException("Email already exists");
         }
 
-        customerDTO.setBalance(BigDecimal.valueOf(0));
-
         try {
-            return new ResponseEntity<>(customerService.save(customerDTO.toCustomer()), HttpStatus.CREATED);
+            customerDTO.setId(0);
+            customerDTO.setBalance(BigDecimal.valueOf(0));
+
+            Customer createdCustomer = customerService.save(customerDTO.toCustomer());
+
+            return new ResponseEntity<>(createdCustomer.toCustomerDTO(), HttpStatus.CREATED);
 //                return new BaseResponse<Customer>().getValidResponse(201, "Successfully Created Customer", customerService.save(customerDTO.toCustomer()));
         } catch (DataIntegrityViolationException e) {
             throw new DataInputException("Invalid customer creation information");
@@ -149,7 +152,10 @@ public class CustomerAPI {
         }
 
         try {
-            return new ResponseEntity<>(customerService.save(customerDTO.toCustomer()).toCustomerDTO(), HttpStatus.CREATED);
+            Customer updatedCustomer = customerService.save(customerDTO.toCustomer());
+
+            return new ResponseEntity<>(updatedCustomer.toCustomerDTO(), HttpStatus.CREATED);
+
         } catch (DataIntegrityViolationException e) {
             throw new DataInputException("Invalid customer update information");
         }
@@ -161,8 +167,10 @@ public class CustomerAPI {
             return appUtils.mapErrorToResponse(bindingResult);
 
         try {
-            customerService.doDeposit(depositDTO);
-            return new ResponseEntity<>(customerService.findById(depositDTO.getCustomerId()).get(), HttpStatus.CREATED);
+            CustomerDTO customerDTO = customerService.doDeposit(depositDTO);
+
+            return new ResponseEntity<>(customerDTO, HttpStatus.CREATED);
+
         } catch (DataIntegrityViolationException e) {
             throw new DataInputException("Invalid deposit information");
         }
@@ -173,16 +181,18 @@ public class CustomerAPI {
         if (bindingResult.hasErrors())
             return appUtils.mapErrorToResponse(bindingResult);
 
-        Optional<Customer> customer = customerService.findById(withdrawDTO.getCustomerId());
+        Optional<Customer> optCustomer = customerService.findById(withdrawDTO.getCustomerId());
 
-        if (customer.isPresent()) {
-            BigDecimal current_balance = customer.get().getBalance();
+        if (optCustomer.isPresent()) {
+            BigDecimal current_balance = optCustomer.get().getBalance();
             BigDecimal transactionAmount = withdrawDTO.getTransactionAmount();
 
-            if (current_balance.compareTo(transactionAmount) != -1) {
+            if (current_balance.compareTo(transactionAmount) >= 0) {
                 try {
-                    customerService.doWithdraw(withdrawDTO);
-                    return new ResponseEntity<>(customerService.findById(withdrawDTO.getCustomerId()).get(), HttpStatus.CREATED);
+                    CustomerDTO customerDTO = customerService.doWithdraw(withdrawDTO);
+
+                    return new ResponseEntity<>(customerDTO, HttpStatus.CREATED);
+
                 } catch (DataIntegrityViolationException e) {
                     throw new DataInputException("Invalid withdrawal information");
                 }
@@ -211,7 +221,7 @@ public class CustomerAPI {
             Optional<Customer> recipient = customerService.findById(transferDTO.getRecipientId());
 
             if (recipient.isPresent()) {
-                if (sender_balance.compareTo(transactionAmount) != -1) {
+                if (sender_balance.compareTo(transactionAmount) >= 0) {
                     try {
                         transferDTO.setFees(fees);
                         transferDTO.setFeesAmount(feeAmount);
@@ -219,13 +229,15 @@ public class CustomerAPI {
 
                         customerService.doTransfer(transferDTO, sender, recipient);
 
-                        Optional<CustomerDTO> senderSuccess = customerService.findByIdWithCustomerDTO(transferDTO.getSenderId());
-                        Optional<CustomerDTO> recipientSuccess = customerService.findByIdWithCustomerDTO(transferDTO.getRecipientId());
+                        CustomerDTO senderSuccess = customerService.findByIdWithCustomerDTO(transferDTO.getSenderId());
+                        CustomerDTO recipientSuccess = customerService.findByIdWithCustomerDTO(transferDTO.getRecipientId());
 
                         Map<String, Object> result = new HashMap<>();
-                        result.put("sender", senderSuccess.get());
-                        result.put("recipient", recipientSuccess.get());
+                        result.put("sender", senderSuccess);
+                        result.put("recipient", recipientSuccess);
+
                         return new ResponseEntity<>(result, HttpStatus.CREATED);
+
                     } catch (DataIntegrityViolationException e) {
                         throw new DataInputException("Invalid transaction information");
                     }
