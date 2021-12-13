@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -31,12 +32,12 @@ public class CustomerServiceImpl implements ICustomerService {
     private TransferRepository transferRepository;
 
     @Override
-    public Iterable<Customer> findAll() {
+    public List<Customer> findAll() {
         return customerRepository.findAll();
     }
 
     @Override
-    public Iterable<Customer> findAllByDeletedIsFalse() {
+    public List<Customer> findAllByDeletedIsFalse() {
         return customerRepository.findAllByDeletedIsFalse();
     }
 
@@ -46,12 +47,12 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     @Override
-    public CustomerDTO findByIdWithCustomerDTO(Long id) {
-        return customerRepository.findByIdWithCustomerDTO(id);
+    public CustomerDTO getCustomerDTOById(Long id) {
+        return customerRepository.getCustomerDTOById(id);
     }
 
     @Override
-    public Iterable<CustomerDTO> findAllCustomerDTO() {
+    public List<CustomerDTO> findAllCustomerDTO() {
         return customerRepository.findAllCustomerDTO();
     }
 
@@ -81,22 +82,22 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     @Override
-    public Optional<DepositDTO> findByIdWithDepositDTO(Long id) {
-        return customerRepository.findByIdWithDepositDTO(id);
+    public Optional<DepositDTO> findDepositDTOById(Long id) {
+        return customerRepository.findDepositDTOById(id);
     }
 
     @Override
-    public Optional<WithdrawDTO> findByIdWithWithdrawDTO(Long id) {
-        return customerRepository.findByIdWithWithdrawDTO(id);
+    public Optional<WithdrawDTO> findWithdrawDTOById(Long id) {
+        return customerRepository.findWithdrawDTOById(id);
     }
 
     @Override
-    public Iterable<RecipientDTO> findAllRecipientDTOByIdWithOutSender(Long id) {
+    public List<RecipientDTO> findAllRecipientDTOByIdWithOutSender(Long id) {
         return customerRepository.findAllRecipientDTOByIdWithOutSender(id);
     }
 
     @Override
-    public Iterable<RecipientDTO> findAllRecipientDTOByIdWithOutSenderAndDeletedIsFalse(Long id) {
+    public List<RecipientDTO> findAllRecipientDTOByIdWithOutSenderAndDeletedIsFalse(Long id) {
         return customerRepository.findAllRecipientDTOByIdWithOutSenderAndDeletedIsFalse(id);
     }
 
@@ -104,7 +105,7 @@ public class CustomerServiceImpl implements ICustomerService {
     public CustomerDTO doDeposit(DepositDTO depositDTO) {
         customerRepository.incrementBalance(depositDTO.getTransactionAmount(), depositDTO.getCustomerId());
 
-        CustomerDTO customerDTO = customerRepository.findByIdWithCustomerDTO(depositDTO.getCustomerId());
+        CustomerDTO customerDTO = customerRepository.getCustomerDTOById(depositDTO.getCustomerId());
 
         depositRepository.save(depositDTO.toDeposit(customerDTO));
 
@@ -115,7 +116,7 @@ public class CustomerServiceImpl implements ICustomerService {
     public CustomerDTO doWithdraw(WithdrawDTO withdrawDTO) {
         customerRepository.reduceBalance(withdrawDTO.getTransactionAmount(), withdrawDTO.getCustomerId());
 
-        CustomerDTO customerDTO = customerRepository.findByIdWithCustomerDTO(withdrawDTO.getCustomerId());
+        CustomerDTO customerDTO = customerRepository.getCustomerDTOById(withdrawDTO.getCustomerId());
 
         withdrawRepository.save(withdrawDTO.toWithdraw(customerDTO));
 
@@ -123,7 +124,7 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     @Override
-    public void doTransfer(TransferDTO transferDTO, Optional<Customer> sender, Optional<Customer> recipient) {
+    public void doTransfer(TransferDTO transferDTO, Customer sender, Customer recipient) {
         customerRepository.reduceBalance(transferDTO.getTransactionAmount(), transferDTO.getSenderId());
 
         customerRepository.incrementBalance(transferDTO.getTransferAmount(), transferDTO.getRecipientId());

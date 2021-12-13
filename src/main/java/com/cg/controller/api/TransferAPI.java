@@ -23,9 +23,9 @@ public class TransferAPI {
     @GetMapping
     public ResponseEntity<?> findAll() {
         try {
-            Iterable<ITransferDTO> iTransferDTOS = transferService.findAllByITransferDTO();
+            List<ITransferDTO> iTransferDTOS = transferService.findAllByITransferDTO();
 
-            if (((List) iTransferDTOS).isEmpty()) {
+            if (iTransferDTOS.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 

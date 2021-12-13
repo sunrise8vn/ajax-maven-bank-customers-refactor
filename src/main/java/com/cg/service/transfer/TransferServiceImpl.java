@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,7 +20,7 @@ public class TransferServiceImpl implements ITransferService {
     private TransferRepository transferRepository;
 
     @Override
-    public Iterable<Transfer> findAll() {
+    public List<Transfer> findAll() {
         return null;
     }
 
@@ -34,7 +35,7 @@ public class TransferServiceImpl implements ITransferService {
     }
 
     @Override
-    public Iterable<ITransferDTO> findAllByITransferDTO() {
+    public List<ITransferDTO> findAllByITransferDTO() {
         return transferRepository.findAllByITransferDTO();
     }
 

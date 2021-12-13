@@ -29,8 +29,8 @@ public class TransferDTO implements Validator {
     private BigDecimal balance;
 
     @NotNull(message = "The transfer amount is required")
-    @DecimalMin(value = "49", message = "Transaction Amount must be greater than or equal to 50", inclusive = false)
-    @DecimalMax(value = "10000000001", message = "Transaction Amount must be less than or equal to 10.000.000.000", inclusive = false)
+    @DecimalMin(value = "50", message = "Transaction Amount must be greater than or equal to 50")
+    @DecimalMax(value = "10000000000", message = "Transaction Amount must be less than or equal to 10.000.000.000")
     private BigDecimal transferAmount;
 
     private int fees;
@@ -69,10 +69,10 @@ public class TransferDTO implements Validator {
         }
     }
 
-    public Transfer toTransfer(Optional<Customer> sender, Optional<Customer> recipient) {
+    public Transfer toTransfer(Customer sender, Customer recipient) {
         return new Transfer()
-                .setSender(sender.get())
-                .setRecipient(recipient.get())
+                .setSender(sender)
+                .setRecipient(recipient)
                 .setTransferAmount(transferAmount)
                 .setFees(fees)
                 .setFeesAmount(feesAmount)

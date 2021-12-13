@@ -52,6 +52,21 @@ public class Customer extends BaseEntity {
     @JsonIgnore
     private Set<Transfer> recipient;
 
+    @PreUpdate
+    void preUpdate() {
+        System.out.println("pre Update !");
+    }
+
+    @PostUpdate
+    void postUpdate() {
+        System.out.println("post Update !");
+    }
+
+    @PostLoad
+    void postLoad() {
+        System.out.println("post Load !");
+    }
+
     @Override
     public String toString() {
         return "Customer{" +

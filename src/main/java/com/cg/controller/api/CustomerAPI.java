@@ -3,7 +3,6 @@ package com.cg.controller.api;
 import com.cg.exception.DataInputException;
 import com.cg.exception.EmailExistsException;
 import com.cg.exception.ResourceNotFoundException;
-import com.cg.model.BaseResponse;
 import com.cg.model.Customer;
 import com.cg.model.dto.*;
 import com.cg.service.customer.ICustomerService;
@@ -40,11 +39,12 @@ public class CustomerAPI {
     @GetMapping
     public ResponseEntity<Iterable<?>> findAll() {
         try {
-            Iterable<CustomerDTO> customerDTOS = customerService.findAllCustomerDTO();
+            List<CustomerDTO> customerDTOS = customerService.findAllCustomerDTO();
 
-            if (((List) customerDTOS).isEmpty()) {
+            if (customerDTOS.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
+
             return new ResponseEntity<>(customerDTOS, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -62,7 +62,7 @@ public class CustomerAPI {
     @GetMapping("/deposit/{id}")
     public ResponseEntity<DepositDTO> showDepositsForm(@PathVariable Long id) {
 
-        Optional<DepositDTO> depositDTO = customerService.findByIdWithDepositDTO(id);
+        Optional<DepositDTO> depositDTO = customerService.findDepositDTOById(id);
 
         if (depositDTO.isPresent()) {
             return new ResponseEntity<>(depositDTO.get(), HttpStatus.OK);
@@ -74,7 +74,7 @@ public class CustomerAPI {
     @GetMapping("/withdraw/{id}")
     public ResponseEntity<WithdrawDTO> showWithdrawForm(@PathVariable Long id) {
 
-        Optional<WithdrawDTO> withdrawDTO = customerService.findByIdWithWithdrawDTO(id);
+        Optional<WithdrawDTO> withdrawDTO = customerService.findWithdrawDTOById(id);
 
         if (withdrawDTO.isPresent()) {
             return new ResponseEntity<>(withdrawDTO.get(), HttpStatus.OK);
@@ -88,7 +88,7 @@ public class CustomerAPI {
 
         Optional<TransferDTO> transferDTO = transferService.findByIdWithTransferDTO(id);
 
-        Iterable<RecipientDTO> recipientDTOS = customerService.findAllRecipientDTOByIdWithOutSenderAndDeletedIsFalse(id);
+        List<RecipientDTO> recipientDTOS = customerService.findAllRecipientDTOByIdWithOutSenderAndDeletedIsFalse(id);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -99,20 +99,6 @@ public class CustomerAPI {
         } else {
             throw new ResourceNotFoundException("No customer found with the Id: " + id);
         }
-    }
-
-
-    @GetMapping("/check-email-test")
-    public BaseResponse<Customer> findByEmailAndIdIsNot(@RequestBody Customer customer) {
-        Optional<Customer> optCustomer = customerService.findByEmailAndIdIsNot(customer.getEmail(), customer.getId());
-
-        if (optCustomer.isPresent()) {
-            return new BaseResponse<Customer>().getErrorResponse(400, "Email already exists");
-        }
-
-        return new BaseResponse<Customer>().getValidResponse(200, "Successfully Added Customer", optCustomer.get());
-//        return optCustomer.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-//                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
 
 
@@ -134,7 +120,6 @@ public class CustomerAPI {
             Customer createdCustomer = customerService.save(customerDTO.toCustomer());
 
             return new ResponseEntity<>(createdCustomer.toCustomerDTO(), HttpStatus.CREATED);
-//                return new BaseResponse<Customer>().getValidResponse(201, "Successfully Created Customer", customerService.save(customerDTO.toCustomer()));
         } catch (DataIntegrityViolationException e) {
             throw new DataInputException("Invalid customer creation information");
         }
@@ -142,8 +127,9 @@ public class CustomerAPI {
 
     @PostMapping("/edit")
     public ResponseEntity<?> updateCustomer(@Validated @RequestBody CustomerDTO customerDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors())
+        if (bindingResult.hasErrors()) {
             return appUtils.mapErrorToResponse(bindingResult);
+        }
 
         Optional<Customer> optCustomer = customerService.findByEmailAndIdIsNot(customerDTO.getEmail(), customerDTO.getId());
 
@@ -163,8 +149,9 @@ public class CustomerAPI {
 
     @PostMapping("/deposit")
     public ResponseEntity<?> doDeposit(@Validated @RequestBody DepositDTO depositDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors())
+        if (bindingResult.hasErrors()) {
             return appUtils.mapErrorToResponse(bindingResult);
+        }
 
         try {
             CustomerDTO customerDTO = customerService.doDeposit(depositDTO);
@@ -178,16 +165,17 @@ public class CustomerAPI {
 
     @PostMapping("/withdraw")
     public ResponseEntity<?> doWithdraw(@Validated @RequestBody WithdrawDTO withdrawDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors())
+        if (bindingResult.hasErrors()) {
             return appUtils.mapErrorToResponse(bindingResult);
+        }
 
         Optional<Customer> optCustomer = customerService.findById(withdrawDTO.getCustomerId());
 
         if (optCustomer.isPresent()) {
-            BigDecimal current_balance = optCustomer.get().getBalance();
+            BigDecimal currentBalance = optCustomer.get().getBalance();
             BigDecimal transactionAmount = withdrawDTO.getTransactionAmount();
 
-            if (current_balance.compareTo(transactionAmount) >= 0) {
+            if (currentBalance.compareTo(transactionAmount) >= 0) {
                 try {
                     CustomerDTO customerDTO = customerService.doWithdraw(withdrawDTO);
 
@@ -206,8 +194,9 @@ public class CustomerAPI {
 
     @PostMapping("/transfer")
     public ResponseEntity<?> doTransfer(@Validated @RequestBody TransferDTO transferDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors())
+        if (bindingResult.hasErrors()) {
             return appUtils.mapErrorToResponse(bindingResult);
+        }
 
         Optional<Customer> sender = customerService.findById(transferDTO.getSenderId());
 
@@ -227,10 +216,10 @@ public class CustomerAPI {
                         transferDTO.setFeesAmount(feeAmount);
                         transferDTO.setTransactionAmount(transactionAmount);
 
-                        customerService.doTransfer(transferDTO, sender, recipient);
+                        customerService.doTransfer(transferDTO, sender.get(), recipient.get());
 
-                        CustomerDTO senderSuccess = customerService.findByIdWithCustomerDTO(transferDTO.getSenderId());
-                        CustomerDTO recipientSuccess = customerService.findByIdWithCustomerDTO(transferDTO.getRecipientId());
+                        CustomerDTO senderSuccess = customerService.getCustomerDTOById(transferDTO.getSenderId());
+                        CustomerDTO recipientSuccess = customerService.getCustomerDTOById(transferDTO.getRecipientId());
 
                         Map<String, Object> result = new HashMap<>();
                         result.put("sender", senderSuccess);

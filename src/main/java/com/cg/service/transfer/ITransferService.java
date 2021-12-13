@@ -6,10 +6,11 @@ import com.cg.model.dto.SumFeesAmountDTO;
 import com.cg.model.dto.TransferDTO;
 import com.cg.service.IGeneralService;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ITransferService extends IGeneralService<Transfer> {
-    Iterable<ITransferDTO> findAllByITransferDTO();
+    List<ITransferDTO> findAllByITransferDTO();
 
     Optional<TransferDTO> findByIdWithTransferDTO(Long id);
 

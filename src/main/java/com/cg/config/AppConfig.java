@@ -125,7 +125,7 @@ public class AppConfig implements WebMvcConfigurer, ApplicationContextAware {
         properties.setProperty("hibernate.connection.charset", "UTF-8");
         properties.setProperty("hibernate.format_sql", "true");
         properties.setProperty("hibernate.hbm2ddl.auto", "update");
-        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
         return properties;
     }
 

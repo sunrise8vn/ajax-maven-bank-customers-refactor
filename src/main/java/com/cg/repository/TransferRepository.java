@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -28,7 +29,7 @@ public interface TransferRepository extends JpaRepository<Transfer, Long> {
             "t.feesAmount AS feesAmount " +
             "FROM Transfer t "
     )
-    Iterable<ITransferDTO> findAllByITransferDTO();
+    List<ITransferDTO> findAllByITransferDTO();
 
 
     @Query("SELECT NEW com.cg.model.dto.SumFeesAmountDTO (SUM(t.feesAmount)) FROM Transfer t ")

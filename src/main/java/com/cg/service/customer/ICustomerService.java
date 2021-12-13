@@ -5,11 +5,12 @@ import com.cg.model.dto.*;
 import com.cg.service.IGeneralService;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 public interface ICustomerService extends IGeneralService<Customer> {
 
-    Iterable<CustomerDTO> findAllCustomerDTO();
+    List<CustomerDTO> findAllCustomerDTO();
 
     Boolean existsByEmail(String email);
 
@@ -17,23 +18,23 @@ public interface ICustomerService extends IGeneralService<Customer> {
 
     Optional<Customer> findByEmailAndIdIsNot(String email, Long id);
 
-    Iterable<Customer> findAllByDeletedIsFalse();
+    List<Customer> findAllByDeletedIsFalse();
 
-    CustomerDTO findByIdWithCustomerDTO(Long id);
+    CustomerDTO getCustomerDTOById(Long id);
 
-    Optional<DepositDTO> findByIdWithDepositDTO(Long id);
+    Optional<DepositDTO> findDepositDTOById(Long id);
 
-    Optional<WithdrawDTO> findByIdWithWithdrawDTO(Long id);
+    Optional<WithdrawDTO> findWithdrawDTOById(Long id);
 
-    Iterable<RecipientDTO> findAllRecipientDTOByIdWithOutSender(Long id);
+    List<RecipientDTO> findAllRecipientDTOByIdWithOutSender(Long id);
 
-    Iterable<RecipientDTO> findAllRecipientDTOByIdWithOutSenderAndDeletedIsFalse(Long id);
+    List<RecipientDTO> findAllRecipientDTOByIdWithOutSenderAndDeletedIsFalse(Long id);
 
     CustomerDTO doDeposit(DepositDTO depositDTO);
 
     CustomerDTO doWithdraw(WithdrawDTO withdrawDTO);
 
-    void doTransfer(TransferDTO transferDTO, Optional<Customer> sender, Optional<Customer> recipient) ;
+    void doTransfer(TransferDTO transferDTO, Customer sender, Customer recipient) ;
 
     void incrementBalance(BigDecimal balance, Long id);
 

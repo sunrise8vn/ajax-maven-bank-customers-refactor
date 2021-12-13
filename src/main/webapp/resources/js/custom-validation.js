@@ -1,5 +1,5 @@
 
-$(document).ready(function () {
+$(function () {
     page.dialogs.element.frmCreateCustomer.validate({
         onkeyup: function(element) { $(element).valid() },
         onclick: false,

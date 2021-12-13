@@ -12,16 +12,17 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-    Iterable<Customer> findAllByDeletedIsFalse();
+    List<Customer> findAllByDeletedIsFalse();
 
 
     @Query("SELECT NEW com.cg.model.dto.CustomerDTO (c.id, c.fullName, c.email, c.phone, c.address, c.balance) FROM Customer c WHERE c.deleted = false ")
-    Iterable<CustomerDTO> findAllCustomerDTO();
+    List<CustomerDTO> findAllCustomerDTO();
 
 
     Optional<Customer> findByEmail(String email);
@@ -30,23 +31,23 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
 
     @Query("SELECT NEW com.cg.model.dto.CustomerDTO (c.id, c.fullName, c.email, c.phone, c.address, c.balance) FROM Customer c WHERE c.id = ?1 ")
-    CustomerDTO findByIdWithCustomerDTO(Long id);
+    CustomerDTO getCustomerDTOById(Long id);
 
 
     @Query("SELECT NEW com.cg.model.dto.DepositDTO (c.id, c.fullName, c.balance) FROM Customer c WHERE c.id = ?1 ")
-    Optional<DepositDTO> findByIdWithDepositDTO(Long id);
+    Optional<DepositDTO> findDepositDTOById(Long id);
 
 
     @Query("SELECT NEW com.cg.model.dto.WithdrawDTO (c.id, c.fullName, c.balance) FROM Customer c WHERE c.id = ?1 ")
-    Optional<WithdrawDTO> findByIdWithWithdrawDTO(Long id);
+    Optional<WithdrawDTO> findWithdrawDTOById(Long id);
 
 
     @Query("SELECT NEW com.cg.model.dto.RecipientDTO (c.id, c.fullName) FROM Customer c WHERE c.id <> ?1 ")
-    Iterable<RecipientDTO> findAllRecipientDTOByIdWithOutSender(Long id);
+    List<RecipientDTO> findAllRecipientDTOByIdWithOutSender(Long id);
 
 
     @Query("SELECT NEW com.cg.model.dto.RecipientDTO (c.id, c.fullName) FROM Customer c WHERE c.id <> ?1 AND c.deleted = false ")
-    Iterable<RecipientDTO> findAllRecipientDTOByIdWithOutSenderAndDeletedIsFalse(Long id);
+    List<RecipientDTO> findAllRecipientDTOByIdWithOutSenderAndDeletedIsFalse(Long id);
 
 
     @Modifying(flushAutomatically = true)

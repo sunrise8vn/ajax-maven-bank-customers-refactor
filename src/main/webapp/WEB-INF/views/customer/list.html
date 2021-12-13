@@ -145,7 +145,8 @@
         let transfer = new Transfer();
         let sender = new Sender();
         let recipient = new Recipient();
-        let tempCustomer = jQuery.validator.format($.trim(page.element.tempCustomer.val()));
+
+        let tempCustomer = jQuery.validator.format($.trim(page.element.tempCustomer.val().toString()));
 
         page.commands.addRow = () => {
             page.element.frmListCustomer.prepend($(tempCustomer(customer.id, customer.fullName, customer.email, customer.phone, customer.address, customer.balance)));
@@ -173,7 +174,6 @@
                 type: "GET",
                 url: page.urls.getAllCustomers,
             }).done((data) => {
-                let str = ``;
                 $.each(data, (index, item) => {
                     customer = item;
                     customer.balance = App.formatNumberSpace(customer.balance);
@@ -283,6 +283,8 @@
 
 
         page.dialogs.commands.createCustomer = () => {
+            delete customer.id;
+            delete customer.balance;
             customer.fullName = page.dialogs.element.fullName.val();
             customer.email = page.dialogs.element.email.val();
             customer.phone = page.dialogs.element.phone.val();
@@ -580,8 +582,6 @@
         page.initializeControlEvent = () => {
 
             page.element.btnShowCreateForm.on("click", function () {
-                delete customer.id;
-                delete customer.balance;
                 page.commands.showCreateModal();
             });
 
@@ -668,7 +668,7 @@
 
         }
 
-        $(document).ready(function () {
+        $(function () {
             page.loadData.getAllCustomers().then(function () {
                 page.commands.formatNumber();
             });
