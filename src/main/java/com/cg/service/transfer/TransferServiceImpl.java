@@ -35,8 +35,8 @@ public class TransferServiceImpl implements ITransferService {
     }
 
     @Override
-    public List<ITransferDTO> findAllByITransferDTO() {
-        return transferRepository.findAllByITransferDTO();
+    public List<ITransferDTO> findAllITransferDTO() {
+        return transferRepository.findAllITransferDTO();
     }
 
     @Override

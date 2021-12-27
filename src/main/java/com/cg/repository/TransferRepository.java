@@ -29,7 +29,7 @@ public interface TransferRepository extends JpaRepository<Transfer, Long> {
             "t.feesAmount AS feesAmount " +
             "FROM Transfer t "
     )
-    List<ITransferDTO> findAllByITransferDTO();
+    List<ITransferDTO> findAllITransferDTO();
 
 
     @Query("SELECT NEW com.cg.model.dto.SumFeesAmountDTO (SUM(t.feesAmount)) FROM Transfer t ")

@@ -89,9 +89,9 @@ $(function () {
         },
         messages: {
             fullNameUp: {
-                required: "Bắt buộc nhập tên đầy đủ",
-                minlength: "Hãy nhập tối thiểu 5 ký tự",
-                maxlength: "Hãy nhập tối đa 50 ký tự"
+                required: "Vui lòng nhập tên đầy đủ",
+                minlength: jQuery.validator.format("Họ tên tối thiểu {0} ký tự"),
+                maxlength: jQuery.validator.format("Họ tên tối đa {0} ký tự")
             },
             emailUp: {
                 required: "Vui lòng nhập email đầy đủ",

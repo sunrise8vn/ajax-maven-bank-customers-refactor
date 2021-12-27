@@ -38,17 +38,13 @@ public class CustomerAPI {
 
     @GetMapping
     public ResponseEntity<Iterable<?>> findAll() {
-        try {
-            List<CustomerDTO> customerDTOS = customerService.findAllCustomerDTO();
+        List<CustomerDTO> customerDTOS = customerService.findAllCustomerDTO();
 
-            if (customerDTOS.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            return new ResponseEntity<>(customerDTOS, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (customerDTOS.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+
+        return new ResponseEntity<>(customerDTOS, HttpStatus.OK);
     }
 
     @GetMapping("/edit/{id}")
@@ -93,8 +89,8 @@ public class CustomerAPI {
         Map<String, Object> result = new HashMap<>();
 
         if (transferDTO.isPresent()) {
-            result.put("transferDTO", transferDTO.get());
-            result.put("recipientDTOS", recipientDTOS);
+            result.put("sender", transferDTO.get());
+            result.put("recipients", recipientDTOS);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
             throw new ResourceNotFoundException("No customer found with the Id: " + id);

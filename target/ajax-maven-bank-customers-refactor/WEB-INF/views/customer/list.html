@@ -54,6 +54,9 @@
 
     <th:block th:replace="/layout/script :: script" />
 
+    <script type="text/javascript" src="/resources/js/app.js"></script>
+    <script type="text/javascript" src="/resources/js/custom-validation.js"></script>
+
     <script>
         let page = {
             urls: {
@@ -79,8 +82,7 @@
                 close: {},
                 alertDanger: {},
                 inputError: {}
-            },
-            initializeControlEvent: () => {}
+            }
         }
 
         page.element.currentRow = $("#currentRow");
@@ -247,14 +249,14 @@
                 type: "GET",
                 url: page.urls.getTransfer + transfer.senderId,
             }).done((resp) => {
-                transfer = resp.transferDTO;
+                transfer = resp.sender;
 
-                let recipientDTOS = [];
-                recipientDTOS = resp.recipientDTOS;
+                let recipients = [];
+                recipients = resp.recipients;
 
                 let str = ``;
 
-                $.each(recipientDTOS, (index, item) => {
+                $.each(recipients, (index, item) => {
                     str += `<option value="${item.recipientId}">(${item.recipientId}) ${item.recipientName}</option>`;
                 });
 
@@ -541,7 +543,7 @@
         page.dialogs.close.modalCreateCustomer = () => {
             page.element.currentRow.val("");
             page.dialogs.alertDanger.modalCreate.empty().removeClass("show").addClass("hide");
-            $("#frmCreateCustomer input.error").removeClass("error");
+            page.dialogs.element.frmCreateCustomer.find("input.error").removeClass("error");
             page.dialogs.element.frmCreateCustomer[0].reset();
             page.dialogs.element.frmCreateCustomer.validate().resetForm();
         }
@@ -549,7 +551,7 @@
         page.dialogs.close.modalUpdateCustomer = () => {
             page.element.currentRow.val("");
             page.dialogs.alertDanger.modalUpdate.empty().removeClass("show").addClass("hide");
-            $("#modalUpdateCustomer input.error").removeClass("error");
+            page.dialogs.element.frmUpdateCustomer.find("input.error").removeClass("error");
             page.dialogs.element.frmUpdateCustomer[0].reset();
             page.dialogs.element.frmUpdateCustomer.validate().resetForm();
         }
@@ -557,7 +559,7 @@
         page.dialogs.close.modalDeposit = () => {
             page.element.currentRow.val("");
             page.dialogs.alertDanger.modalDeposit.empty().removeClass("show").addClass("hide");
-            $("#modalDeposit input.error").removeClass("error");
+            page.dialogs.element.frmDeposit.find("input.error").removeClass("error");
             page.dialogs.element.frmDeposit[0].reset();
             page.dialogs.element.frmDeposit.validate().resetForm();
         }
@@ -565,7 +567,7 @@
         page.dialogs.close.modalWithdraw = () => {
             page.element.currentRow.val("");
             page.dialogs.alertDanger.modalWithdraw.empty().removeClass("show").addClass("hide");
-            $("#modalWithdraw input.error").removeClass("error");
+            page.dialogs.element.frmWithdraw.find("input.error").removeClass("error");
             page.dialogs.element.frmWithdraw[0].reset();
             page.dialogs.element.frmWithdraw.validate().resetForm();
         }
@@ -573,7 +575,7 @@
         page.dialogs.close.modalTransfer = () => {
             page.element.currentRow.val("");
             page.dialogs.alertDanger.modalTransfer.empty().removeClass("show").addClass("hide");
-            $("#modalTransfer input.error").removeClass("error");
+            page.dialogs.element.frmTransfer.find("input.error").removeClass("error");
             page.dialogs.element.frmTransfer[0].reset();
             page.dialogs.element.frmTransfer.validate().resetForm();
         }

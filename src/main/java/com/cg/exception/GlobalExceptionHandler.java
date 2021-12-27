@@ -52,16 +52,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     body.put("message", ex.getMessage());
 
-    return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    return new ResponseEntity<>(body, HttpStatus.CONFLICT);
   }
 
   @ExceptionHandler(DataInputException.class)
-  public ResponseEntity<?> dataInputException(DataInputException ex, WebRequest request) {
+  public ResponseEntity<?> dataInputException(DataInputException ex, HttpStatus status, WebRequest request) {
     Map<String, String> body = new HashMap<>();
 
     body.put("message", ex.getMessage());
 
-    return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(ConstraintViolationException.class)

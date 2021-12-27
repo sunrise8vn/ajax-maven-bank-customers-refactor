@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ITransferService extends IGeneralService<Transfer> {
-    List<ITransferDTO> findAllByITransferDTO();
+    List<ITransferDTO> findAllITransferDTO();
 
     Optional<TransferDTO> findByIdWithTransferDTO(Long id);
 

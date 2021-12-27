@@ -22,18 +22,13 @@ public class TransferAPI {
 
     @GetMapping
     public ResponseEntity<?> findAll() {
-        try {
-            List<ITransferDTO> iTransferDTOS = transferService.findAllByITransferDTO();
+        List<ITransferDTO> iTransferDTOS = transferService.findAllITransferDTO();
 
-            if (iTransferDTOS.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            return new ResponseEntity<>(iTransferDTOS, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (iTransferDTOS.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
+        return new ResponseEntity<>(iTransferDTOS, HttpStatus.OK);
     }
 
     @GetMapping("/sum-fees-amount")

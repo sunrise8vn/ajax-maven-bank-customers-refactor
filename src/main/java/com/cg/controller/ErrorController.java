@@ -66,6 +66,10 @@ public class ErrorController {
                 errorMsg = "Http Error Code: 405. Method Not Allowed";
                 break;
             }
+            case 409: {
+                errorMsg = "Http Error Code: 409. Data Conflict";
+                break;
+            }
             case 500: {
                 errorMsg = "Http Error Code: 500. Internal Server Error";
                 break;

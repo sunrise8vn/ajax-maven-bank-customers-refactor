@@ -59,6 +59,8 @@
 
     <th:block th:replace="/layout/script :: script" />
 
+    <script type="text/javascript" src="/resources/js/app.js"></script>
+
     <script>
         let page = {
             urls: {
@@ -110,7 +112,7 @@
             });
         }
 
-        $(document).ready(function () {
+        $(function () {
             page.loadData.getAllTransfers();
             page.loadData.getSumFeesAmount();
         });
